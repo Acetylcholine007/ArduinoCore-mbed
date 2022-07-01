@@ -71,6 +71,12 @@ void RGBled::setColor(RGBColors color)
   _red = 0x20;
   }
 
+  if(color == white) {
+  _blue = 0xFF;
+  _green = 0xFF;
+  _red = 0xFF;
+  }
+
   setColor(_red, _green, _blue);
 
 }
@@ -160,7 +166,9 @@ uint8_t RGBled::readByte(uint8_t address, uint8_t subAddress)
   Wire1.write(subAddress);
   Wire1.endTransmission(false);
   Wire1.requestFrom(address, 1);
-  while(!Wire1.available()) {}
+  uint32_t timeout = 100;
+  uint32_t start_time = millis();
+  while(!Wire1.available() && (millis() - start_time) < timeout) {}
   uint8_t ret = Wire1.read();
   nicla::i2c_mutex.unlock();
   return ret;
